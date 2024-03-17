@@ -149,7 +149,7 @@ void render_main_wave(int yoffset, Color color_array[9]) {
             windows[0].yoffset + windows[0].height / 2,
             windows[0].xoffset + windows[0].width,
             windows[0].yoffset + windows[0].height / 2,
-            windows[1].color
+            windows[1].color //Try colorarray not windows
         );
     }
 }
