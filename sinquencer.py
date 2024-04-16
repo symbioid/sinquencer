@@ -1,6 +1,7 @@
 import math
 
 import pygame
+import pygame.gfxdraw
 
 # pygame setup
 # pygame.init()
@@ -17,24 +18,35 @@ window_height = screen.get_height() * 0.625 - y_offset
 num_samples = window_width
 sample_rate = num_samples
 wave = [num_samples]
+waves_frequency = 2.0
+amplitude = 100
 
 
-# (Math.sin ( Tau * waves_frequency * x /
-#  sampleRate * timeScale) *
-#  waves[w].amplitude)
-#
+def gen_wave():
+    for x in range(window_width):
+        time_scale = window_width / num_samples
+        current_y = (
+            -math.sin(math.tau * waves_frequency * x / sample_rate * time_scale)
+            * amplitude
+        )
+        wave.append(current_y)
 
 
-for x in range(window_width):
-    # timeScale = ( window_width/numSamples );
-    # currentY = ( Math.asin(math.tau * waves_frequency * x / sampleRate * timeScale* waves[w].amplitude)
-    current_y = math.asin(((math.radians(2.0) * x / num_samples) * 1000) / 1000)
-    wave.append(current_y)
+def draw_wave():
+    # pygame.draw.line(screen, "green", (0, 400), (1024, 400), 3)
+    for i, x in enumerate(wave):
+        # if i == 0:
+        #    pass
+        if i > 1:
+            pygame.draw.line(
+                screen,
+                "orange",
+                ((i - 1 + x_offset), (wave[i - 1] + y_offset + (window_height / 2))),
+                ((i + x_offset), (wave[i] + y_offset + (window_height / 2))),
+                10,
+            )
 
-print(list(enumerate(wave)))
-
-# for x in wave
-#    print(wave[x])
+        # print(list(enumerate(wave)), end="\n")
 
 
 def draw_window(x, y, w, h):
@@ -45,12 +57,14 @@ def draw_center_line(x, y, x2, y2):
     pygame.draw.line(screen, "grey", (x, y), (x2, y2), 1)
 
 
+gen_wave()
+
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             RUNNING = False
-
     screen.fill("black")
+    draw_wave()
     draw_window(x_offset, y_offset, window_width, window_height)
     draw_center_line(
         x_offset,
