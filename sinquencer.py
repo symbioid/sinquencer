@@ -33,14 +33,64 @@ waves_array = [
     {"frequency": 9, "amplitude": 22},
 ]
 
-channels_array = [
+"""iterate through on construction where * i at end is offset."""
+windows_array = [
     {
-        "x_off": x_offset,
+        "x_off": x_offset + (window_width / 8) * 0,
         "y_off": y_offset + window_height + 20,
         "width": window_width / 8,
         "height": window_height / 8,
         "color": "red",
-    }
+    },
+    {
+        "x_off": x_offset + (window_width / 8) * 1,
+        "y_off": y_offset + window_height + 20,
+        "width": window_width / 8,
+        "height": window_height / 8,
+        "color": "orange",
+    },
+    {
+        "x_off": x_offset + (window_width / 8) * 2,
+        "y_off": y_offset + window_height + 20,
+        "width": window_width / 8,
+        "height": window_height / 8,
+        "color": "yellow",
+    },
+    {
+        "x_off": x_offset + (window_width / 8) * 3,
+        "y_off": y_offset + window_height + 20,
+        "width": window_width / 8,
+        "height": window_height / 8,
+        "color": "green",
+    },
+    {
+        "x_off": x_offset + (window_width / 8) * 4,
+        "y_off": y_offset + window_height + 20,
+        "width": window_width / 8,
+        "height": window_height / 8,
+        "color": "blue",
+    },
+    {
+        "x_off": x_offset + (window_width / 8) * 5,
+        "y_off": y_offset + window_height + 20,
+        "width": window_width / 8,
+        "height": window_height / 8,
+        "color": "indigo",
+    },
+    {
+        "x_off": x_offset + (window_width / 8) * 6,
+        "y_off": y_offset + window_height + 20,
+        "width": window_width / 8,
+        "height": window_height / 8,
+        "color": "violet",
+    },
+    {
+        "x_off": x_offset + (window_width / 8) * 7,
+        "y_off": y_offset + window_height + 20,
+        "width": window_width / 8,
+        "height": window_height / 8,
+        "color": "white",
+    },
 ]
 
 
@@ -75,25 +125,38 @@ def draw_wave():
 
 def draw_window(x, y, w, h):
     pygame.draw.rect(screen, "darkgrey", (x - 3, y - 3, w + 6, h + 6), 1)
+    draw_center_line(
+        x_offset,
+        y_offset + window_height / 2,
+        x_offset + window_width,
+        y_offset + window_height / 2,
+    )
 
 
 def draw_windows():
-    pygame.draw.rect(
-        screen,
-        channels_array[0]["color"],
-        (
-            channels_array[0]["x_off"] - 1,
-            channels_array[0]["y_off"] - 1,
-            channels_array[0]["width"] + 2,
-            channels_array[0]["height"] + 2,
-        ),
-        1,
-    )
-    # pygame.draw.line(screen, "grey", (x, y), (x2, y2), 1)
+    for i, waves in enumerate(windows_array):
+        pygame.draw.rect(
+            screen,
+            windows_array[i]["color"],
+            (
+                windows_array[i]["x_off"],
+                windows_array[i]["y_off"],
+                windows_array[i]["width"],
+                windows_array[i]["height"],
+            ),
+            1,
+        )
+        draw_center_line(
+            windows_array[i]["x_off"],
+            windows_array[i]["y_off"] + windows_array[i]["height"] / 2,
+            windows_array[i]["x_off"] + windows_array[i]["width"],
+            windows_array[i]["y_off"] + windows_array[i]["height"] / 2,
+            windows_array[i]["color"],
+        )
 
 
-def draw_center_line(x, y, x2, y2):
-    pygame.draw.line(screen, "grey", (x, y), (x2, y2), 1)
+def draw_center_line(x, y, x2, y2, c="grey"):
+    pygame.draw.line(screen, c, (x, y), (x2, y2), 1)
 
 
 gen_wave()
@@ -105,12 +168,7 @@ while running:
     screen.fill("black")
     draw_wave()
     draw_window(x_offset, y_offset, window_width, window_height)
-    draw_center_line(
-        x_offset,
-        y_offset + window_height / 2,
-        x_offset + window_width,
-        y_offset + window_height / 2,
-    )
+
     draw_windows()
 
     # flip() buffers
