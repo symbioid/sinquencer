@@ -3,7 +3,6 @@ import math
 import pygame
 import pygame.gfxdraw
 
-# pygame setup
 # pygame.init()
 
 screen = pygame.display.set_mode((1280, 960))  # (1024, 768))  #
@@ -17,10 +16,11 @@ window_width = int(screen.get_width() - x_offset * 2.0)
 window_height = screen.get_height() * 0.625 - y_offset
 sample_rate = 44000
 num_samples = 44000
-wave = [num_samples]
+wave = []
 waves_frequency = 2.0
 amplitude = 100
 
+color_array = ["red", "orange", "yellow", "green", "blue", "indigo", "violet", "white"]
 waves_array = [
     {"frequency": 1, "amplitude": 200},
     {"frequency": 2, "amplitude": 22},
@@ -35,6 +35,13 @@ waves_array = [
 
 """iterate through on construction where * i at end is offset."""
 windows_array = [
+    {
+        "x_off": x_offset,
+        "y_off": y_offset,
+        "width": window_width,
+        "height": window_height,
+        "color": "limegreen",
+    },
     {
         "x_off": x_offset + (window_width / 8) * 0,
         "y_off": y_offset + window_height + 20,
@@ -106,20 +113,21 @@ def gen_wave():
         wave.append(current_y)
 
 
-def draw_wave():
-    # pygame.draw.line(screen, "green", (0, 400), (1024, 400), 3)
+def draw_wave():  # noqa: ANN001
     for i, x in enumerate(wave):
         if i == 0:
             pass
         if i > 1:
             pygame.draw.line(
                 screen,
-                "orange",
-                ((i - 1 + x_offset), (wave[i - 1] + y_offset + (window_height / 2))),
+                "grey",
+                (
+                    (i - 1 + x_offset),
+                    (wave[i - 1] + y_offset + (window_height / 2)),
+                ),
                 ((i + x_offset), (wave[i] + y_offset + (window_height / 2))),
-                3,
+                1,
             )
-
         # print(list(enumerate(wave)), end="\n")
 
 
@@ -137,21 +145,21 @@ def draw_windows():
     for i, waves in enumerate(windows_array):
         pygame.draw.rect(
             screen,
-            windows_array[i]["color"],
+            waves["color"],
             (
-                windows_array[i]["x_off"],
-                windows_array[i]["y_off"],
-                windows_array[i]["width"],
-                windows_array[i]["height"],
+                waves["x_off"],
+                waves["y_off"],
+                waves["width"],
+                waves["height"],
             ),
             1,
         )
         draw_center_line(
-            windows_array[i]["x_off"],
-            windows_array[i]["y_off"] + windows_array[i]["height"] / 2,
-            windows_array[i]["x_off"] + windows_array[i]["width"],
-            windows_array[i]["y_off"] + windows_array[i]["height"] / 2,
-            windows_array[i]["color"],
+            waves["x_off"],
+            waves["y_off"] + waves["height"] / 2,
+            waves["x_off"] + waves["width"],
+            waves["y_off"] + waves["height"] / 2,
+            waves["color"],
         )
 
 
@@ -159,17 +167,17 @@ def draw_center_line(x, y, x2, y2, c="grey"):
     pygame.draw.line(screen, c, (x, y), (x2, y2), 1)
 
 
+## ------------------------------------- ##
 gen_wave()
 
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             RUNNING = False
-    screen.fill("black")
-    draw_wave()
-    draw_window(x_offset, y_offset, window_width, window_height)
 
+    screen.fill("black")
     draw_windows()
+    draw_wave()
 
     # flip() buffers
     pygame.display.flip()
@@ -179,4 +187,4 @@ while running:
     # independent physics.
     dt = clock.tick(60) / 1000
 
-    # pygame.quit()
+#    pygame.quit()
