@@ -3,7 +3,7 @@ import math
 import pygame
 import pygame.gfxdraw
 
-# pygame.init()
+pygame.init()
 
 screen = pygame.display.set_mode((1280, 960))  # (1024, 768))  #
 clock = pygame.time.Clock()
@@ -18,11 +18,13 @@ sample_rate = 44000
 num_samples = 44000
 wave = []
 waves_frequency = 2.0
-amplitude = 100
+wave_data_array = []
+
 
 color_array = ["red", "orange", "yellow", "green", "blue", "indigo", "violet", "white"]
 waves_array = [
-    {"frequency": 1, "amplitude": 200},
+    {"frequency": 9, "amplitude": 100},
+    {"frequency": 1, "amplitude": 22},
     {"frequency": 2, "amplitude": 22},
     {"frequency": 3, "amplitude": 22},
     {"frequency": 4, "amplitude": 22},
@@ -30,17 +32,14 @@ waves_array = [
     {"frequency": 6, "amplitude": 22},
     {"frequency": 7, "amplitude": 22},
     {"frequency": 8, "amplitude": 22},
-    {"frequency": 9, "amplitude": 22},
 ]
-
-"""iterate through on construction where * i at end is offset."""
 windows_array = [
     {
         "x_off": x_offset,
         "y_off": y_offset,
         "width": window_width,
         "height": window_height,
-        "color": "limegreen",
+        "color": "darkgrey",
     },
     {
         "x_off": x_offset + (window_width / 8) * 0,
@@ -106,39 +105,54 @@ def gen_wave():
         time_scale = sample_rate / window_width
         current_y = (
             -math.sin(
-                math.tau * waves_array[3]["frequency"] * x / sample_rate * time_scale
+                math.tau * waves_array[0]["frequency"] * x / sample_rate * time_scale
             )
-            * amplitude
+            * waves_array[0]["amplitude"]
         )
         wave.append(current_y)
 
 
-def draw_wave():  # noqa: ANN001
-    for i, x in enumerate(wave):
-        if i == 0:
-            pass
-        if i > 1:
-            pygame.draw.line(
-                screen,
-                "grey",
-                (
-                    (i - 1 + x_offset),
-                    (wave[i - 1] + y_offset + (window_height / 2)),
-                ),
-                ((i + x_offset), (wave[i] + y_offset + (window_height / 2))),
-                1,
+def gen_waves():
+    for i, w in enumerate(waves_array):
+        for x in range(int(windows_array[i]["width"])):
+            time_scale = sample_rate / windows_array[i]["width"]
+            current_y = (
+                -math.sin(math.tau * w["frequency"] * x / sample_rate * time_scale)
+                * w["amplitude"]
             )
-        # print(list(enumerate(wave)), end="\n")
+            wave.append(current_y)
+        wave_data_array.append(wave)
+
+    print(list(enumerate(wave_data_array)), end="\n")
 
 
-def draw_window(x, y, w, h):
-    pygame.draw.rect(screen, "darkgrey", (x - 3, y - 3, w + 6, h + 6), 1)
-    draw_center_line(
-        x_offset,
-        y_offset + window_height / 2,
-        x_offset + window_width,
-        y_offset + window_height / 2,
-    )
+def draw_waves(waves_array):  # noqa: ANN001
+    for wave in waves_array:
+        for i, x in enumerate(wave):
+            if i == 0:
+                pass
+            if i > 1:
+                pygame.draw.line(
+                    screen,
+                    "grey",
+                    (
+                        (i - 1 + x_offset),
+                        (wave[i - 1] + y_offset + (window_height / 2)),
+                    ),
+                    ((i + x_offset), (wave[i] + y_offset + (window_height / 2))),
+                    1,
+                )
+            # print(list(enumerate(wave)), end="\n")
+
+
+# def draw_window(x, y, w, h):
+#    pygame.draw.rect(screen, "darkgrey", (x - 3, y - 3, w + 6, h + 6), 1)
+#    draw_center_line(
+#        x_offset,
+#        y_offset + window_height / 2,
+#        x_offset + window_width,
+#        y_offset + window_height / 2,
+#    )
 
 
 def draw_windows():
@@ -167,24 +181,19 @@ def draw_center_line(x, y, x2, y2, c="grey"):
     pygame.draw.line(screen, c, (x, y), (x2, y2), 1)
 
 
-## ------------------------------------- ##
-gen_wave()
+## ----------------------------------------------------------------------------------- ##
+## ----------------------------------------------------------------------------------- ##
 
+gen_waves()
 while running:
     for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            RUNNING = False
-
-    screen.fill("black")
-    draw_windows()
-    draw_wave()
-
-    # flip() buffers
-    pygame.display.flip()
-
-    # limits FPS to 60
-    # dt is delta time in seconds since last frame, used for framerate-
-    # independent physics.
-    dt = clock.tick(60) / 1000
-
-#    pygame.quit()
+        screen.fill("black")
+        draw_windows()
+        draw_waves(wave_data_array)
+        # flip() buffers
+        pygame.display.flip()
+        # limits FPS to 60
+        # dt is delta time in seconds since last frame, used for framerate-
+        # independent physics.
+        dt = clock.tick(60) / 1000
+        # pygame.quit()
