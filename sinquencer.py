@@ -13,15 +13,16 @@ y_offset = screen.get_height() * 0.0833
 window_width = int(screen.get_width() - x_offset * 2.0)
 window_height = screen.get_height() * 0.625 - y_offset
 sample_rate = screen.get_width()
-num_samples = 1024
+num_samples = sample_rate
 wave = []
 tau = math.pi * 2
+frequency = 2.0
 
 
 def gen_wave():
-    for x in range(sample_rate):
-        time_scale = sample_rate / sample_rate
-        current_y = math.sin(tau * 1 * x / sample_rate * time_scale) * 100
+    for x in range(num_samples):
+        time_scale = sample_rate / num_samples
+        current_y = -math.sin(tau * frequency * x / sample_rate * time_scale) * 100
         print(current_y)
         wave.append(current_y)
 
@@ -39,6 +40,7 @@ def draw_waves(wave):  # noqa: ANN001
 print(list(enumerate(wave)), end="\n")
 
 
+# if __name__ == "__Main__":
 gen_wave()
 
 while running:
@@ -46,7 +48,3 @@ while running:
         screen.fill("black")
         draw_waves(wave)
         pygame.display.flip()
-        # limits FPS to 60
-        # dt is delta time in seconds since last frame, used for framerate-
-        dt = clock.tick(60) / 1000
-        # pygame.quit()
