@@ -6,17 +6,21 @@ screen = pygame.display.set_mode((1280, 960))  # (1024, 768))  #
 clock = pygame.time.Clock()
 running = True
 dt = 0
+
+#### WINDOW DATA/OFFSETS ####
 x_offset = screen.get_width() * 0.0625
 y_offset = screen.get_height() * 0.0833
 window_width = int(screen.get_width() - x_offset * 2.0)
 window_height = screen.get_height() * 0.625 - y_offset
+main_window = pygame.Rect(x_offset, y_offset, window_width, window_height)
+
+#### WAVE DATA ###
+frequency = 1.0
+amplitude = window_height * 0.33
 sample_rate = 44000  # screen.get_width()
-num_samples = screen.get_width()
+num_samples = main_window.width
 wave = []
 tau = math.pi * 2
-frequency = 1.0
-amplitude = 100
-main_window = pygame.Rect(x_offset, y_offset, window_width, window_height)
 
 
 def draw_window():
@@ -31,15 +35,19 @@ def gen_wave():
         )
         print(current_y)
         wave.append(current_y)
+    return wave
 
 
-def draw_waves(wave):  # noqa: ANN001
+def draw_wave(wave):  # noqa: ANN001
     for x in range(num_samples - 1):
         pygame.draw.line(
             screen,
             pygame.Color("grey"),
-            (x, wave[x] * 2 + screen.get_height() / 2),
-            (x + 1, wave[x + 1] * 2 + screen.get_height() / 2),
+            (main_window.x + x, wave[x] + main_window.y + main_window.height / 2),
+            (
+                main_window.x + x + 1,
+                wave[x + 1] + main_window.y + main_window.height / 2,
+            ),
         )
 
 
@@ -47,11 +55,11 @@ print(list(enumerate(wave)), end="\n")
 
 
 # if __name__ == "__Main__":
-gen_wave()
+wave = gen_wave()
 
 while running:
     for event in pygame.event.get():
         screen.fill("black")
         draw_window()
-        draw_waves(wave)
+        draw_wave(wave)
         pygame.display.flip()
