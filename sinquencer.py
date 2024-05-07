@@ -6,60 +6,165 @@ screen = pygame.display.set_mode((1280, 960))  # (1024, 768))  #
 clock = pygame.time.Clock()
 running = True
 dt = 0
-
-#### WINDOW DATA/OFFSETS ####
-x_offset = screen.get_width() * 0.0625
-y_offset = screen.get_height() * 0.0833
-window_width = int(screen.get_width() - x_offset * 2.0)
-window_height = screen.get_height() * 0.625 - y_offset
-main_window = pygame.Rect(x_offset, y_offset, window_width, window_height)
-
-#### WAVE DATA ###
-frequency = 1.0
-amplitude = window_height * 0.33
-sample_rate = 44000  # screen.get_width()
-num_samples = main_window.width
-wave = []
 tau = math.pi * 2
 
+# WINDOW DATA/OFFSETS #
+x_offset = screen.get_width() * 0.0625
+y_offset = screen.get_height() * 0.0833
+main_window_width = int(screen.get_width() - x_offset * 2.0)
+main_window_height = screen.get_height() * 0.625 - y_offset
+main_window = pygame.Rect(x_offset, y_offset, main_window_width, main_window_height)
 
-def draw_window():
-    pygame.gfxdraw.rectangle(screen, main_window, pygame.Color("red"))
+# WAVE DATA #
+# frequency = 4.0
+sample_rate = 44000
+
+wave_data = []
+color_list = [
+    "grey",
+    "red",
+    "orange",
+    "yellow",
+    "green",
+    "blue",
+    "indigo",
+    "violet",
+    "pink",
+]
+
+waves = [
+    {
+        "frequency": 1,
+        "amplitude": 172,
+    },
+    {
+        "frequency": 1,
+        "amplitude": 23,
+    },
+    {
+        "frequency": 2,
+        "amplitude": 23,
+    },
+    {
+        "frequency": 3,
+        "amplitude": 23,
+    },
+    {
+        "frequency": 4,
+        "amplitude": 23,
+    },
+    {
+        "frequency": 5,
+        "amplitude": 23,
+    },
+    {
+        "frequency": 6,
+        "amplitude": 23,
+    },
+    {
+        "frequency": 7,
+        "amplitude": 23,
+    },
+    {
+        "frequency": 8,
+        "amplitude": 23,
+    },
+]
+
+windows = [
+    {
+        "rect": main_window,
+        "amplitude": 172,
+    },
+    {
+        "rect": pygame.Rect(main_window.x, main_window.bottom + 20, 128, 70),
+        "amplitude": 23,  # 70 * .33,
+    },
+    {
+        "rect": pygame.Rect(main_window.x + 142, main_window.bottom + 20, 128, 70),
+        "amplitude": 23,
+    },
+    {
+        "rect": pygame.Rect(main_window.x + 142 * 2, main_window.bottom + 20, 128, 70),
+        "amplitude": 23,
+    },
+    {
+        "rect": pygame.Rect(main_window.x + 142 * 3, main_window.bottom + 20, 128, 70),
+        "amplitude": 23,
+    },
+    {
+        "rect": pygame.Rect(main_window.x + 142 * 4, main_window.bottom + 20, 128, 70),
+        "amplitude": 23,
+    },
+    {
+        "rect": pygame.Rect(main_window.x + 142 * 5, main_window.bottom + 20, 128, 70),
+        "amplitude": 23,
+    },
+    {
+        "rect": pygame.Rect(main_window.x + 142 * 6, main_window.bottom + 20, 128, 70),
+        "amplitude": 23,
+    },
+    {
+        "rect": pygame.Rect(main_window.x + 142 * 7, main_window.bottom + 20, 128, 70),
+        "amplitude": 23,
+    },
+]
 
 
-def gen_wave():
-    for x in range(num_samples):
-        time_scale = sample_rate / num_samples
-        current_y = (
-            -math.sin(tau * frequency * x / sample_rate * time_scale) * amplitude
-        )
-        print(current_y)
-        wave.append(current_y)
-    return wave
-
-
-def draw_wave(wave):  # noqa: ANN001
-    for x in range(num_samples - 1):
-        pygame.draw.line(
+def draw_windows():
+    for i in range(9):
+        pygame.gfxdraw.rectangle(
             screen,
-            pygame.Color("grey"),
-            (main_window.x + x, wave[x] + main_window.y + main_window.height / 2),
-            (
-                main_window.x + x + 1,
-                wave[x + 1] + main_window.y + main_window.height / 2,
-            ),
+            windows[i]["rect"],
+            pygame.Color(color_list[i]),
         )
 
 
-print(list(enumerate(wave)), end="\n")
+def gen_waves():
+    for i in range(9):
+        wave = []
+        for x in range(windows[i]["rect"].width):
+            time_scale = sample_rate / windows[i]["rect"].width
+            current_y = -(
+                math.sin(tau * waves[i]["frequency"] * x / sample_rate * time_scale)
+            )
+            print(f"i: {i}, x: {x}, y: {current_y}")
+            wave.append(current_y)
+    wave_data.append(wave)
 
 
-# if __name__ == "__Main__":
-wave = gen_wave()
+def draw_waves():
+    for i, wave in enumerate(wave_data):
+        num_samples = windows[i]["rect"].width
+        for x in range(num_samples):
+            print(f"sample: {x}")
+            pygame.draw.line(
+                screen,
+                color_list[i],
+                (
+                    windows[i]["rect"].x + x,
+                    wave_data[i][abs(x - 1)]
+                    + windows[i]["rect"].centery * waves[i]["amplitude"],
+                ),
+                (
+                    windows[i]["rect"].x + x + 1,
+                    wave_data[i][abs(x)]
+                    + windows[i]["rect"].centery * waves[i]["amplitude"],
+                ),
+            )
 
+
+def print_wave_data():
+    for wave in wave_data:
+        print(wave)
+
+
+gen_waves()
+print_wave_data()
 while running:
-    for event in pygame.event.get():
-        screen.fill("black")
-        draw_window()
-        draw_wave(wave)
-        pygame.display.flip()
+    # for event in pygame.event.get():
+    screen.fill("black")
+    draw_windows()
+
+    draw_waves()
+    pygame.display.flip()
