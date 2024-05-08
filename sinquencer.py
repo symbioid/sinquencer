@@ -1,4 +1,6 @@
 import math
+import sys
+
 import pygame
 import pygame.gfxdraw
 
@@ -162,9 +164,12 @@ def print_wave_data():
 gen_waves()
 print_wave_data()
 while running:
-    # for event in pygame.event.get():
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
     screen.fill("black")
     draw_windows()
 
-    draw_waves()
+    # draw_waves()
     pygame.display.flip()
