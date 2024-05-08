@@ -20,7 +20,6 @@ main_window = pygame.Rect(x_offset, y_offset, main_window_width, main_window_hei
 # WAVE DATA #
 # frequency = 4.0
 sample_rate = 44000
-
 wave_data = []
 color_list = [
     "grey",
@@ -33,7 +32,6 @@ color_list = [
     "violet",
     "pink",
 ]
-
 waves = [
     {
         "frequency": 1,
@@ -72,7 +70,6 @@ waves = [
         "amplitude": 23,
     },
 ]
-
 windows = [
     {
         "rect": main_window,
@@ -83,7 +80,7 @@ windows = [
         "amplitude": 23,  # 70 * .33,
     },
     {
-        "rect": pygame.Rect(main_window.x + 142, main_window.bottom + 20, 128, 70),
+        "rect": pygame.Rect(main_window.x + 142 * 1, main_window.bottom + 20, 128, 70),
         "amplitude": 23,
     },
     {
@@ -125,40 +122,38 @@ def draw_windows():
 def gen_waves():
     for i in range(9):
         wave = []
-        for x in range(windows[i]["rect"].width):
+        for x in range(windows[i]["rect"].width - 1):
             time_scale = sample_rate / windows[i]["rect"].width
             current_y = -(
                 math.sin(tau * waves[i]["frequency"] * x / sample_rate * time_scale)
             )
-            print(f"i: {i}, x: {x}, y: {current_y}")
+            # print(f"i: {i}, x: {x}, y: {current_y}")
             wave.append(current_y)
-    wave_data.append(wave)
+        wave_data.append(wave)
 
 
 def draw_waves():
-    for i, wave in enumerate(wave_data):
-        num_samples = windows[i]["rect"].width
-        for x in range(num_samples):
-            print(f"sample: {x}")
+    for i, w in enumerate(wave_data):
+        for x in range(windows[i]["rect"].width):
+            # print(f"sample: {x}")
             pygame.draw.line(
                 screen,
                 color_list[i],
                 (
-                    windows[i]["rect"].x + x,
-                    wave_data[i][abs(x - 1)]
-                    + windows[i]["rect"].centery * waves[i]["amplitude"],
+                    windows[i]["rect"].x + x - 1,
+                    windows[i]["rect"].centery * waves[i]["amplitude"]
+                    + wave_data[i][x - 1],
                 ),
                 (
-                    windows[i]["rect"].x + x + 1,
-                    wave_data[i][abs(x)]
-                    + windows[i]["rect"].centery * waves[i]["amplitude"],
+                    windows[i]["rect"].x + x,
+                    windows[i]["rect"].centery * waves[i]["amplitude"]
+                    + wave_data[i][x],
                 ),
             )
 
 
 def print_wave_data():
-    for wave in wave_data:
-        print(wave)
+    print(wave_data)
 
 
 gen_waves()
@@ -170,6 +165,5 @@ while running:
             sys.exit()
     screen.fill("black")
     draw_windows()
-
-    # draw_waves()
+    draw_waves()
     pygame.display.flip()
