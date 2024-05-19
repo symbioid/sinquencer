@@ -1,5 +1,6 @@
-import sys
 import math
+import sys
+
 import pygame
 import pygame.gfxdraw
 
@@ -30,7 +31,7 @@ def gen_wave():
         wave.append(current_y)
 
 
-def draw_waves(wave):  # noqa: ANN001
+def draw_waves(wave):
     for x in range(screen.get_width() - 1):
         pygame.draw.line(
             screen,
@@ -53,7 +54,10 @@ while running:
             sys.exit()
         screen.fill("black")
         pygame.draw.line(
-            screen, pygame.Color("grey"), (0, ycenter), (screen.get_width(), ycenter)
+            screen,
+            pygame.Color("grey"),
+            (0, ycenter),
+            (screen.get_width(), ycenter),
         )
         draw_waves(wave)
         pygame.display.flip()
