@@ -21,22 +21,23 @@ tau = math.pi * 2
 frequency = 5.5
 main_window = pygame.Rect(x_offset, y_offset, window_width, window_height)
 amplitude = 100
+phase = 0
 
 
-def gen_wave(rec):
+def gen_wave(window):
     for x in range(num_samples):
         # time_scale = rec.width
-        current_y = -math.sin(tau * frequency * x / rec.width) * amplitude
+        current_y = -math.sin(tau * x * frequency / window.width + phase) * amplitude
         print(current_y)
         wave.append(current_y)
 
 
-def draw_wave(wave, rec):
-    for x in range(1, rec.width):
+def draw_wave(wave, window):
+    for x in range(1, window.width):
         pygame.draw.circle(
             screen,
             pygame.Color("red"),
-            (rec.left + x, wave[x] + rec.centery),
+            (window.left + x, wave[x] + window.centery),
             1.0,
         )
 
