@@ -1,5 +1,0 @@
-[tool.ruff.lint]
-select = ["ALL"]
-ignore = ["D103"]
-[tool.ruff]
-line-length = 120

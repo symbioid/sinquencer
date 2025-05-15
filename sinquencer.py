@@ -1,19 +1,19 @@
+# Copyright (c) 2025 2025 by Dave Elliot is licensed under
+# Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
+
+from dataclasses import dataclass
+import logging
 import math
 import sys
-
 import pygame
-import pygame.gfxdraw
 
+logger = logging.getLogger(__name__)
 pygame.init()
 
 screen = pygame.display.set_mode((1280, 960))  # (1024, 768))  #
 clock = pygame.time.Clock()
 running = True
-# dt = 0
-
-# screen.get_width() * 0.0625
 main_x_offset = 80
-# main_y_offset = screen.get_height() * 0.0833
 main_y_offset = 80
 main_window_width = screen.get_width() - 160
 main_window_height = screen.get_height() * 0.625 - main_y_offset
@@ -31,7 +31,10 @@ colors = [
 ]
 
 main_window = pygame.Rect(
-    main_x_offset, main_y_offset, main_window_width, main_window_height
+    main_x_offset,
+    main_y_offset,
+    main_window_width,
+    main_window_height,
 )
 small_windows = [
     # RED 1
@@ -93,24 +96,29 @@ sample_rate = main_window.width
 num_samples = sample_rate
 
 
-def gen_wave(window, frequency, phase):
+@dataclass
+class wave():
+    wave_data: list
+    freq: float = 0.0
+    amp: float = small_window_height * .289
+    phase: float = 0.0
+
+def gen_wave(window: pygame.Rect, frequency: float, phase: float) -> list:
     wave = []
     for x in range(num_samples):
-        current_y = math.sin(tau * x * frequency / sample_rate + phase) * amplitude
-        print(current_y)
+        current_y = math.sin(tau * x * frequency /
+                             sample_rate + phase) * amplitude
+        logger.info(current_y)
         wave.append(current_y)
     return wave
-    wave = []
 
-
-def all_waves():
+def all_waves() -> list:
     g = []
     for i in range(6):
         g.append(gen_wave(main_window, 1, i))
     return g
 
-
-def draw_wave(wave, color):
+def draw_wave(wave: list, color: pygame.Color):
     # (instead scale wave to window, dont chop off) !!!
     # for x in range(1, num_samples):
     for x in range(2, num_samples):
@@ -121,17 +129,12 @@ def draw_wave(wave, color):
             1.0,
         )
 
-
-def draw_all_waves(all_waves):
+def draw_all_waves(all_waves: list):
     # draw on main screen
     for i, wave in enumerate(all_waves):
         draw_wave(wave, colors[i])
 
-    for i, wave in enumerate(all_waves):
-        draw_wave
-
-
-def draw_sub_windows():
+def draw_sub_windows() -> None:
     for i, window in enumerate(small_windows):
         pygame.draw.rect(
             screen,
@@ -144,14 +147,13 @@ def draw_sub_windows():
             pygame.Color("grey"),  # colors[i],
             False,
             (
-                (small_windows[i].left - 1, small_windows[i].centery),
-                (small_windows[i].right - 1, small_windows[i].centery),
+                (window.left - 1, window.centery),
+                (window.right - 1, window.centery),
             ),
             1,
         )
 
-
-def draw_main_window():
+def draw_main_window() -> None:
     pygame.draw.line(
         screen,
         pygame.Color("grey"),
