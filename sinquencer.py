@@ -1,7 +1,5 @@
 # Copyright (c) 2025 2025 by Dave Elliot is licensed under
 # Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
-
-from dataclasses import dataclass
 import logging
 import math
 import sys
@@ -9,7 +7,7 @@ import pygame
 
 logger = logging.getLogger(__name__)
 pygame.init()
-screen = pygame.display.set_mode((1280, 960))  # (1024, 768))  #
+screen = pygame.display.set_mode((1280, 960))
 clock = pygame.time.Clock()
 running = True
 main_x_offset = 80
@@ -89,65 +87,62 @@ sub_windows = [
 
 tau = math.pi * 2
 frequency = 1.0
-amplitude = sub_window_height
-main_window_amplitude = sub_window_height
-sub_window_amplitude = sub_window_height
+amplitude = 1.0
 phase = 0
-sample_rate = 1120
-# sample_rate = 44000
+sample_rate = 2400
 sub_num_samples = 150
 main_window_scale_rate = main_window_width / sample_rate
 sub_window_scale_rate = sub_num_samples / sample_rate
 
 
-@dataclass
-class wave:
-    wave_data: list
-    freq: float = 0.0
-    amp: float = sub_window_height
-    phase: float = 0.0
-
-
-waves = []
-
-
-def gen_wave(frequency: float, phase: float) -> list:
-    wave = []
+def gen_wave(freq: float) -> list[float]:
+    wave_list = []
     for x in range(sample_rate):
-        current_y = math.sin(tau * x * frequency / sample_rate) * amplitude
-        # current_y = ( math.sin(x * (2 * math.pi * frequency) / sample_rate * (1 / frequency) / sub_window_width) * amplitude)
-        # y_pixel = sin(x * (2 * pi * frequency) / sample_rate * samples_per_period / viewport_width)
-        #logger.info(current_y)
-        #print(current_y)
-        wave.append(current_y)
+        current_y = math.sin(tau * x * freq / sample_rate) * amplitude
+        wave_list.append(current_y)
 
-    return wave
+    return wave_list
 
 
 def all_waves() -> list:
-    # g = []
+    g = []
     for i in range(7):
-        waves.append(gen_wave(i + 1, 0))
-    return waves
+        g.append(gen_wave(i + 1))
+    return g
 
 
-def draw_wave(window: pygame.Rect, wave: list, scale_rate, color: pygame.Color):
-    # (instead scale wave to window, dont chop off) !!!
-    # for x in range(1, num_samples):
+def draw_wave(
+    window: pygame.Rect, wave_list: list, scale_rate, vert_scale, color: pygame.Color
+):
     for x in range(0, sample_rate):
         pygame.draw.circle(  # dot to plot the wave
             screen,
             color,
-            (window.left + x * scale_rate, wave[x] + window.centery),
+            (
+                window.left + x * scale_rate,
+                wave_list[x] * amplitude * vert_scale + window.centery,
+            ),
             1.0,
         )
 
 
-def draw_all_waves(all_waves: list):
+def draw_all_waves(every_wave: list):
     # draw on sub_windows
-    for i, wave in enumerate(all_waves):
-        draw_wave(sub_windows[i], wave, sub_window_scale_rate, colors[i])
-        draw_wave(main_window, wave, main_window_scale_rate, colors[i])
+    for i, wave_list in enumerate(every_wave):
+        draw_wave(
+            sub_windows[i],
+            wave_list,
+            sub_window_scale_rate,
+            sub_window_height,
+            colors[i],
+        )
+        draw_wave(
+            main_window,
+            wave_list,
+            main_window_scale_rate,
+            120,
+            colors[i],
+        )
 
 
 def draw_sub_windows() -> None:
@@ -161,7 +156,7 @@ def draw_sub_windows() -> None:
         )
 
         """Drawing center lines"""
-        pygame.draw.lines(
+        _ = pygame.draw.lines(
             screen,
             colors[i],
             # pygame.Color("grey"),  # colors[i],
@@ -187,14 +182,13 @@ def draw_main_window() -> None:
 
 waves = all_waves()
 
-
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
-        screen.fill("black")
-        draw_main_window()
-        draw_sub_windows()
-        draw_all_waves(waves)
-        pygame.display.flip()
+    screen.fill("black")
+    draw_main_window()
+    draw_sub_windows()
+    draw_all_waves(waves)
+    pygame.display.flip()
