@@ -13,7 +13,7 @@ running = True
 main_x_offset = 80
 main_y_offset = 80
 main_window_width = screen.get_width() - 160
-main_window_height = screen.get_height() * 0.625 - main_y_offset
+main_window_height = int(screen.get_height() * 0.625 - main_y_offset)
 
 sub_window_width = 70
 sub_window_height = 20
@@ -136,6 +136,7 @@ def draw_all_waves(every_wave: list):
             sub_window_height,
             colors[i],
         )
+        # draw on main_window
         draw_wave(
             main_window,
             wave_list,
@@ -180,6 +181,20 @@ def draw_main_window() -> None:
     pygame.draw.rect(screen, pygame.Color("grey"), main_window, 1)
 
 
+def draw_steps(num_steps):
+    temp_x = 0
+    for i in range(1, main_window_width):
+        if i % (main_window_width / num_steps) == 0:
+            temp_x = main_x_offset + i
+            pygame.draw.line(
+                screen,
+                pygame.Color("grey"),
+                (temp_x, main_y_offset),
+                (temp_x, main_y_offset + main_window_height),
+                1,
+            )
+
+
 waves = all_waves()
 
 while running:
@@ -191,4 +206,5 @@ while running:
     draw_main_window()
     draw_sub_windows()
     draw_all_waves(waves)
+    draw_steps(64)
     pygame.display.flip()
