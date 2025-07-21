@@ -4,6 +4,7 @@ import math
 import sys
 import pygame
 import windows
+import os
 
 
 def gen_wave(freq: float) -> list[float]:
@@ -12,8 +13,8 @@ def gen_wave(freq: float) -> list[float]:
         current_y = (
             math.sin(windows.tau * x * freq / windows.sample_rate) * windows.amplitude
         )
+        # print(current_y)
         wave_list.append(current_y)
-
     return wave_list
 
 
@@ -39,7 +40,13 @@ def draw_wave(
         )
 
 
-def draw_all_waves(every_wave: list):
+def compare_waves(wave1, wave2):
+    for i, val in enumerate(wave1):
+        if math.isclose(wave1[i], wave2[i], abs_tol=0.000001):
+            print(f"{i} {val} : {wave1[i]} ; {wave2[i]}")
+
+
+def draw_all_layers(every_wave: list):
     # draw on sub_windows
     for i, wave_list in enumerate(every_wave):
         draw_wave(
@@ -110,14 +117,17 @@ def draw_steps(num_steps):
 
 waves = all_waves()
 
-while windows.running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
-    windows.screen.fill("black")
-    draw_main_window()
-    draw_sub_windows()
-    draw_all_waves(waves)
-    draw_steps(16)
-    pygame.display.flip()
+
+# while windows.running:
+#    for event in pygame.event.get():
+#        if event.type == pygame.QUIT:
+#            pygame.quit()
+#            sys.exit()
+# windows.screen.fill("black")
+os.system("clear")
+compare_waves(waves[0], waves[3])
+#    draw_main_window()
+# draw_sub_windows()
+# draw_all_layers(waves)
+# draw_steps(16)
+# pygame.display.flip()

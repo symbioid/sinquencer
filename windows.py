@@ -1,7 +1,5 @@
 import pygame
 import math
-import sys
-import pygame
 import logging
 
 pygame.init()
