@@ -1,10 +1,12 @@
 # Copyright (c) 2025 2025 by Dave Elliot is licensed under
 # Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
 import math
-import sys
-import pygame
-import windows
 import os
+import sys
+
+import pygame
+
+import windows
 
 
 def gen_wave(freq: float) -> list[float]:
@@ -43,6 +45,19 @@ def draw_wave(
 def compare_waves(wave1, wave2):
     for i, val in enumerate(wave1):
         if math.isclose(wave1[i], wave2[i], abs_tol=0.000001):
+            pygame.draw.line(
+                windows.screen,
+                windows.colors[4],
+                (
+                    windows.main_window.left + i * windows.main_window_scale_rate,
+                    windows.main_window.top,
+                ),
+                (
+                    windows.main_window.left + i * windows.main_window_scale_rate,
+                    windows.main_window.bottom,
+                ),
+                5,
+            )
             print(f"{i} {val} : {wave1[i]} ; {wave2[i]}")
 
 
@@ -57,13 +72,31 @@ def draw_all_layers(every_wave: list):
             windows.colors[i],
         )
         # draw on main_window
-        draw_wave(
-            windows.main_window,
-            wave_list,
-            windows.main_window_scale_rate,
-            120,
-            windows.colors[i],
-        )
+        # draw_wave(
+        #     windows.main_window,
+        #     wave_list,
+        #     windows.main_window_scale_rate,
+        #     120,
+        #     windows.colors[i],
+        # )
+
+
+def draw_2_layers(layer1, layer2):
+    draw_wave(
+        windows.main_window,
+        layer1,
+        windows.main_window_scale_rate,
+        120,
+        windows.colors[0],
+    )
+
+    draw_wave(
+        windows.main_window,
+        layer2,
+        windows.main_window_scale_rate,
+        120,
+        windows.colors[1],
+    )
 
 
 def draw_sub_windows() -> None:
@@ -118,16 +151,17 @@ def draw_steps(num_steps):
 waves = all_waves()
 
 
-# while windows.running:
-#    for event in pygame.event.get():
-#        if event.type == pygame.QUIT:
-#            pygame.quit()
-#            sys.exit()
-# windows.screen.fill("black")
-os.system("clear")
-compare_waves(waves[0], waves[3])
-#    draw_main_window()
-# draw_sub_windows()
-# draw_all_layers(waves)
-# draw_steps(16)
-# pygame.display.flip()
+while windows.running:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+    windows.screen.fill("black")
+    # os.system("clear")
+    compare_waves(waves[0], waves[3])
+    draw_main_window()
+    draw_sub_windows()
+    draw_all_layers(waves)
+    draw_steps(16)
+    draw_2_layers(waves[0], waves[3])
+    pygame.display.flip()

@@ -1,6 +1,6 @@
 # Sinquencer
 
-![Image of Main Window of Sinquencer rendering all 7 waves/layers from the subwindows, plus 7 Subwindows representing layers, each with their own wave](/SinquencerSS-2025-06-08.png)
+![Image of Main Window of Sinquencer rendering all 2 waves from the subwindows and showing their intersections in blue, plus 7 Subwindows representing layers, each with their own wave](/sinquencer-7-21-25-intersections.png)
 
 An experimental MIDI sequencer based on the intersections of waves built using Pygame-CE
 
